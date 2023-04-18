@@ -75,7 +75,7 @@ class Block:
 
     def collides_up(self):
     	for x,y in self.coords():
-    		if y == 0:
+    		if y <= 0:
     			return True
     	return False
 
@@ -155,14 +155,9 @@ while True:
 				for x,y in figure_l.coords():
 					field.append([x,y])
 					newBlock_l = True
-		if anim_cnt_r>=limit_r:
-			figure_r.y+=TILE
-			anim_cnt_r=0
-			if figure_r.collides_down():
-				figure_r.y -= TILE
-				for x,y in figure_r.coords():
-					field.append([x,y])
-					newBlock_r = True
+
+					if figure_l.collides_up():
+						ends = True
 
 					#if any row is full
 					for y in range(H):
@@ -182,10 +177,36 @@ while True:
 									if [i*TILE,j*TILE] in field:
 										field.remove([i*TILE,j*TILE])
 										field.append([i*TILE, j*TILE+TILE])
+		if anim_cnt_r>=limit_r:
+			figure_r.y+=TILE
+			anim_cnt_r=0
+			if figure_r.collides_down():
+				figure_r.y -= TILE
+				for x,y in figure_r.coords():
+					field.append([x,y])
+					newBlock_r = True
 
-				#if ends
-				if figure_l.collides_up() or figure_l.collides_up():
-					ends = True
+					if figure_l.collides_up() or figure_r.collides_up():
+						ends = True
+
+					#if any row is full
+					for y in range(H):
+						isempty = False
+						for x in range(W):
+							if [x*TILE,y*TILE] in field:
+								isempty = False
+							else:
+								isempty = True
+								break
+						if not isempty:
+							score+=10
+							for x in range(W):
+								field.remove([x*TILE,y*TILE])
+							for j in range(y-1, -1, -1):
+								for i in range(W):
+									if [i*TILE,j*TILE] in field:
+										field.remove([i*TILE,j*TILE])
+										field.append([i*TILE, j*TILE+TILE])
 	else:
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
@@ -222,7 +243,7 @@ while True:
 	#draw next
 	for i in range(4):
 		next_l_rect = pygame.Rect(W*TILE+2*TILE+0.5*(next_figure_l.coords()[i][0]-(W/2-2)*TILE), 0.5*(TILE+TILE+next_figure_l.coords()[i][1]), TILE/2, TILE/2)
-		pygame.draw.rect(game_sc, 'white', next_l_rect)
+		pygame.draw.rect(game_sc, 'pink', next_l_rect)
 	for i in range(4):
 		next_r_rect = pygame.Rect(W*TILE+4*TILE+0.5*(next_figure_l.coords()[i][0]-(W/2-2)*TILE), 0.5*(TILE+TILE+next_figure_l.coords()[i][1]), TILE/2, TILE/2)
 		pygame.draw.rect(game_sc, 'white', next_r_rect)

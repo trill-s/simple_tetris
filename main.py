@@ -84,8 +84,10 @@ ends = False
 while True:
 	if not ends:
 		if newBlock == True:
+			anim_speed += 2
 			if first_round:
 				next_figure = Block()
+				anim_speed = 60
 				first_round = False
 			figure = copy.deepcopy(next_figure)
 			next_figure = Block()

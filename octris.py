@@ -196,7 +196,7 @@ while True:
 					field.append([x,y])
 					newBlock_r = True
 
-					if figure_l.collides_up() or figure_r.collides_up():
+					if figure_r.collides_up():
 						ends = True
 
 					#if any row is full

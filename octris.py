@@ -79,6 +79,12 @@ class Block:
     			return True
     	return False
 
+    def collides_figure(self, other_figure):
+    	for x,y in self.coords():
+    		if [x,y] in other_figure.coords():
+    			return True
+    	return False
+
 score_font = pygame.font.Font(pygame.font.get_default_font(), 20)
 message_font = pygame.font.Font(pygame.font.get_default_font(), 30)
 
@@ -114,30 +120,30 @@ while True:
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_a:
 					figure_l.x -= TILE
-					if figure_l.collides_with_left_border() or figure_l.collides_down():
+					if figure_l.collides_with_left_border() or figure_l.collides_down() or figure_l.collides_figure(figure_r):
 						figure_l.x += TILE
 				elif event.key == pygame.K_d:
 					figure_l.x += TILE
-					if figure_l.collides_with_right_border()  or figure_l.collides_down():
+					if figure_l.collides_with_right_border()  or figure_l.collides_down() or figure_l.collides_figure(figure_r):
 						figure_l.x -= TILE
 				elif event.key == pygame.K_w:
 					figure_l.rotate()
-					if figure_l.collides_with_left_border() or figure_l.collides_with_right_border() or figure_l.collides_down():
+					if figure_l.collides_with_left_border() or figure_l.collides_with_right_border() or figure_l.collides_down() or figure_l.collides_figure(figure_r):
 						figure_l.rotate_back()
 				elif event.key == pygame.K_s:
 					limit_l = acc_limit
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_LEFT:
 					figure_r.x -= TILE
-					if figure_r.collides_with_left_border() or figure_r.collides_down():
+					if figure_r.collides_with_left_border() or figure_r.collides_down() or figure_r.collides_figure(figure_l):
 						figure_r.x += TILE
 				elif event.key == pygame.K_RIGHT:
 					figure_r.x += TILE
-					if figure_r.collides_with_right_border()  or figure_r.collides_down():
+					if figure_r.collides_with_right_border()  or figure_r.collides_down() or figure_r.collides_figure(figure_l):
 						figure_r.x -= TILE
 				elif event.key == pygame.K_UP:
 					figure_r.rotate()
-					if figure_r.collides_with_left_border() or figure_r.collides_with_right_border() or figure_r.collides_down():
+					if figure_r.collides_with_left_border() or figure_r.collides_with_right_border() or figure_r.collides_down() or figure_r.collides_figure(figure_l):
 						figure_r.rotate_back()
 				elif event.key == pygame.K_DOWN:
 					limit_r = acc_limit
@@ -149,6 +155,8 @@ while True:
 		if anim_cnt_l>=limit_l:
 			figure_l.y+=TILE
 			anim_cnt_l=0
+			if figure_l.collides_figure(figure_r):
+				figure_l.y-=TILE
 			#block rests
 			if figure_l.collides_down():
 				figure_l.y -= TILE
@@ -180,6 +188,8 @@ while True:
 		if anim_cnt_r>=limit_r:
 			figure_r.y+=TILE
 			anim_cnt_r=0
+			if figure_r.collides_figure(figure_l):
+				figure_r.y-=TILE
 			if figure_r.collides_down():
 				figure_r.y -= TILE
 				for x,y in figure_r.coords():
@@ -247,12 +257,6 @@ while True:
 	for i in range(4):
 		next_r_rect = pygame.Rect(W*TILE+4*TILE+0.5*(next_figure_l.coords()[i][0]-(W/2-2)*TILE), 0.5*(TILE+TILE+next_figure_l.coords()[i][1]), TILE/2, TILE/2)
 		pygame.draw.rect(game_sc, 'white', next_r_rect)
-
-	#paint intersection
-	for x_l,y_l in figure_l.coords():
-		if [x_l,y_l] in figure_r.coords():
-			intersect_rect = pygame.Rect(x_l, y_l, TILE, TILE)
-			pygame.draw.rect(game_sc, 'white', intersect_rect)
 
 	#draw message
 	if ends:
